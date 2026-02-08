@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚜️ The Grand Tournament of Flip VII ⚜️</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    background: #2b1d0e;
+    color: #3e2a14;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+    margin-top: 30px;
+    font-size: 2.5rem;
+}
+
+.container {
+    width: 95%;
+    max-width: 1100px;
+    margin: 30px auto;
+}
+
+.card {
+    background: #f4e4c1;
+    margin: 15px auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 85%;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.throne {
+    border: 3px solid gold;
+    box-shadow: 0 0 25px gold;
+    transform: scale(1.05);
+}
+
+.goldGlow {
+    box-shadow: 0 0 20px gold;
+}
+
+.cosmicGlow {
+    box-shadow: 0 0 25px #ffd700, 0 0 40px #a855f7;
+}
+
+.title {
+    font-size: 1.3rem;
+    margin-top: 5px;
+}
+
+.score {
+    font-size: 1.6rem;
+    margin-top: 10px;
+}
+
+.banner {
+    color: gold;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+}
+
+.refresh {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #c9b37e;
+}
+</style>
+</head>
+<body>
+
+<h1>⚜️ The Grand Tournament of Flip VII ⚜️</h1>
+<div class="banner" id="banner"></div>
+
+<div class="container" id="leaderboard"></div>
+
+<div class="refresh">
+Auto-refreshing every 30 seconds…
+</div>
+
+<script>
+
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5cF1uw15BXEj_czuBu979BQ_mQUlHBsiEj17VyyKyTscrPwz8OLK4wgyvkVle7otZnBRHTISUSxY5/pub?output=csv";
+
+function getTitle(score) {
+    if (score >= 2000) return "🌌 The Eternal Architect of Destiny";
+    if (score >= 1400) return "👑 God of Fortune, Bringer of Sevens";
+    if (score >= 1000) return "Sovereign of the Seven";
+    if (score >= 800) return "Grandmaster";
+    if (score >= 600) return "Warlord";
+    if (score >= 400) return "Knight of Flip VII";
+    if (score >= 200) return "Squire";
+    return "Peasant of the Realm";
+}
+
+async function loadLeaderboard() {
+    const response = await fetch(SHEET_URL);
+    const data = await response.text();
+
+    const rows = data.trim().split("\n").slice(1);
+    const players = {};
+
+    rows.forEach(row => {
+        const cols = row.split(",");
+        const name = cols[1].trim();
+        const score = parseInt(cols[2]);
+
+        if (!players[name]) players[name] = 0;
+        players[name] += score;
+    });
+
+    const leaderboard = Object.entries(players)
+        .map(([name, total]) => ({ name, total }))
+        .sort((a, b) => b.total - a.total);
+
+    const container = document.getElementById("leaderboard");
+    const banner = document.getElementById("banner");
+    container.innerHTML = "";
+
+    let throneHolder = null;
+
+    // Determine Supreme Divine Throne Holder
+    const gods = leaderboard.filter(p => p.total >= 1400);
+    if (gods.length > 0) {
+        throneHolder = gods.sort((a,b)=>b.total-a.total)[0];
+        banner.innerHTML = `⚜️ SUPREME DIVINE THRONE HOLDER ⚜️<br>👑 ${throneHolder.name}`;
+    } else if (leaderboard.length > 0) {
+        banner.innerHTML = `⚔️ Highest in the Realm: ${leaderboard[0].name}`;
+    }
+
+    leaderboard.forEach(player => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        const title = getTitle(player.total);
+
+        if (player.total >= 1400) {
+            card.classList.add("goldGlow");
+        }
+
+        if (player.total >= 2000) {
+            card.classList.add("cosmicGlow");
+        }
+
+        if (throneHolder && throneHolder.name === player.name) {
+            card.classList.add("throne");
+        }
+
+        card.innerHTML = `
+            <div class="title">${player.name}</div>
+            <div class="score">${player.total} Points</div>
+            <div class="title">${title}</div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+loadLeaderboard();
+setInterval(loadLeaderboard, 30000); // Auto refresh every 30 sec
+
+</script>
+
+</body>
+</html>
