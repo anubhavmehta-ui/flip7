@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎴 FLIP 7 Leaderboard</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+    color: white;
+    text-align: center;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+h1 {
+    margin-top: 40px;
+    font-size: 2.7rem;
+}
+
+.container {
+    margin: 40px auto;
+    width: 90%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 15px;
+}
+
+th {
+    background: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+}
+
+.rank {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.gold { color: gold; }
+.silver { color: silver; }
+.bronze { color: #cd7f32; }
+
+.footer {
+    margin-top: 20px;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+
+<h1>🎴 FLIP 7 Leaderboard</h1>
+
+<div class="container">
+    <table id="leaderboard">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Top 3 Total</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="footer">
+        Top 3 Scores Per Player Counted
+    </div>
+</div>
+
+<script>
+
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5cF1uw15BXEj_czuBu979BQ_mQUlHBsiEj17VyyKyTscrPwz8OLK4wgyvkVle7otZnBRHTISUSxY5/pub?output=csv";
+
+async function loadLeaderboard() {
+    const response = await fetch(SHEET_URL);
+    const data = await response.text();
+
+    const rows = data.trim().split("\n").slice(1);
+
+    const players = {};
+
+    rows.forEach(row => {
+        const cols = row.split(",");
+        const name = cols[1].trim();
+        const score = parseInt(cols[2]);
+
+        if (!players[name]) {
+            players[name] = [];
+        }
+        players[name].push(score);
+    });
+
+    const leaderboard = [];
+
+    for (let player in players) {
+        const top3 = players[player]
+            .sort((a, b) => b - a)
+            .slice(0, 3);
+
+        const total = top3.reduce((sum, val) => sum + val, 0);
+
+        leaderboard.push({
+            name: player,
+            total: total
+        });
+    }
+
+    leaderboard.sort((a, b) => b.total - a.total);
+
+    const tbody = document.querySelector("#leaderboard tbody");
+    tbody.innerHTML = "";
+
+    leaderboard.forEach((player, index) => {
+        const row = document.createElement("tr");
+
+        let rankClass = "";
+        if (index === 0) rankClass = "gold";
+        if (index === 1) rankClass = "silver";
+        if (index === 2) rankClass = "bronze";
+
+        row.innerHTML = `
+            <td class="rank ${rankClass}">${index + 1}</td>
+            <td>${player.name}</td>
+            <td>${player.total}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+loadLeaderboard();
+
+</script>
+
+</body>
+</html>
