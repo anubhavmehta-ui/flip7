@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⚜️ The Grand Tournament of Flip VII ⚜️</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
 body {
     margin: 0;
@@ -19,23 +20,43 @@ body {
         #d4a94f 70%,
         #b8860b 100%
     );
-    background: radial-gradient(circle at top, #fff3d1 0%, #d4a94f 60%, #b8860b 100%);
     background-attachment: fixed;
     color: #4b2e14;
 }
 
-h1 {
-    color: gold;
-    margin-top: 30px;
-    font-size: 2.5rem;
+/* Header plaque */
+.header {
+    background: linear-gradient(135deg, #3a250f, #5a3b17);
+    padding: 25px;
+    margin: 30px auto;
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
+.header h1 {
+    color: #ffd700;
+    margin: 0;
+    font-size: 2.6rem;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+}
+
+.banner {
+    margin-top: 15px;
+    font-size: 1.3rem;
+    color: #f4e4c1;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
+}
+
+/* Card container */
 .container {
     width: 95%;
     max-width: 1100px;
     margin: 30px auto;
 }
 
+/* Player cards */
 .card {
     background: #f4e4c1;
     margin: 15px auto;
@@ -50,47 +71,51 @@ h1 {
     transform: scale(1.02);
 }
 
+/* Throne holder */
 .throne {
     border: 3px solid gold;
     box-shadow: 0 0 25px gold;
     transform: scale(1.05);
 }
 
+/* God tier glow */
 .goldGlow {
     box-shadow: 0 0 20px gold;
 }
 
+/* 2000+ cosmic glow */
 .cosmicGlow {
     box-shadow: 0 0 25px #ffd700, 0 0 40px #a855f7;
 }
 
-.title {
-    font-size: 1.3rem;
-    margin-top: 5px;
+.player-name {
+    font-size: 1.6rem;
 }
 
 .score {
-    font-size: 1.6rem;
-    margin-top: 10px;
+    font-size: 1.8rem;
+    margin-top: 8px;
 }
 
-.banner {
-    color: gold;
-    font-size: 1.3rem;
-    margin-bottom: 20px;
+.title {
+    font-size: 1.2rem;
+    margin-top: 8px;
 }
 
 .refresh {
     margin-top: 20px;
     font-size: 0.9rem;
-    color: #c9b37e;
+    color: #5a3b17;
 }
+
 </style>
 </head>
 <body>
 
-<h1>⚜️ The Grand Tournament of Flip VII ⚜️</h1>
-<div class="banner" id="banner"></div>
+<div class="header">
+    <h1>⚜️ The Grand Tournament of Flip VII ⚜️</h1>
+    <div class="banner" id="banner"></div>
+</div>
 
 <div class="container" id="leaderboard"></div>
 
@@ -102,6 +127,7 @@ Auto-refreshing every 30 seconds…
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5cF1uw15BXEj_czuBu979BQ_mQUlHBsiEj17VyyKyTscrPwz8OLK4wgyvkVle7otZnBRHTISUSxY5/pub?output=csv";
 
+/* Title Logic */
 function getTitle(score) {
     if (score >= 2000) return "🌌 The Eternal Architect of Destiny";
     if (score >= 1400) return "👑 God of Fortune, Bringer of Sevens";
@@ -122,8 +148,10 @@ async function loadLeaderboard() {
 
     rows.forEach(row => {
         const cols = row.split(",");
-        const name = cols[1].trim();
+        const name = cols[1]?.trim();
         const score = parseInt(cols[2]);
+
+        if (!name || isNaN(score)) return;
 
         if (!players[name]) players[name] = 0;
         players[name] += score;
@@ -139,13 +167,15 @@ async function loadLeaderboard() {
 
     let throneHolder = null;
 
-    // Determine Supreme Divine Throne Holder
     const gods = leaderboard.filter(p => p.total >= 1400);
+
     if (gods.length > 0) {
         throneHolder = gods.sort((a,b)=>b.total-a.total)[0];
         banner.innerHTML = `⚜️ SUPREME DIVINE THRONE HOLDER ⚜️<br>👑 ${throneHolder.name}`;
     } else if (leaderboard.length > 0) {
         banner.innerHTML = `⚔️ Highest in the Realm: ${leaderboard[0].name}`;
+    } else {
+        banner.innerHTML = "Awaiting warriors...";
     }
 
     leaderboard.forEach(player => {
@@ -154,20 +184,14 @@ async function loadLeaderboard() {
 
         const title = getTitle(player.total);
 
-        if (player.total >= 1400) {
-            card.classList.add("goldGlow");
-        }
-
-        if (player.total >= 2000) {
-            card.classList.add("cosmicGlow");
-        }
-
+        if (player.total >= 1400) card.classList.add("goldGlow");
+        if (player.total >= 2000) card.classList.add("cosmicGlow");
         if (throneHolder && throneHolder.name === player.name) {
             card.classList.add("throne");
         }
 
         card.innerHTML = `
-            <div class="title">${player.name}</div>
+            <div class="player-name">${player.name}</div>
             <div class="score">${player.total} Points</div>
             <div class="title">${title}</div>
         `;
@@ -177,7 +201,7 @@ async function loadLeaderboard() {
 }
 
 loadLeaderboard();
-setInterval(loadLeaderboard, 30000); // Auto refresh every 30 sec
+setInterval(loadLeaderboard, 30000);
 
 </script>
 
