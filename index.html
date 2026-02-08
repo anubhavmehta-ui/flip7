@@ -9,6 +9,7 @@
 
 <style>
 
+/* ===== PAGE BACKGROUND (Bright Tournament Red) ===== */
 body {
     margin: 0;
     font-family: 'Cinzel', serif;
@@ -21,49 +22,46 @@ body {
         #ff6666 100%
     );
     background-attachment: fixed;
-    color: #f4e4c1;
+    color: #fff4db;
 }
 
-/* Header plaque */
+/* ===== HEADER PLAQUE ===== */
 .header {
-    background: linear-gradient(
-        135deg,
-        #b34700,
-        #d2691e,
-        #ff8c00
-    );
+    background: #4b0000;
     padding: 25px;
     margin: 30px auto;
     width: 90%;
     max-width: 1000px;
     border-radius: 15px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
 }
 
 .header h1 {
-    color: #ffd700;
     margin: 0;
     font-size: 2.6rem;
+    background: linear-gradient(90deg, #ffb347, #ffd700, #ffb347);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
 }
 
 .banner {
     margin-top: 15px;
     font-size: 1.3rem;
-    color: #f4e4c1;
+    color: #fff4db;
     text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
 }
 
-/* Card container */
+/* ===== CONTAINER ===== */
 .container {
     width: 95%;
     max-width: 1100px;
     margin: 30px auto;
 }
 
-/* Player cards */
+/* ===== PLAYER CARDS ===== */
 .card {
-    background: #f4e4c1;
+    background: #fff4db;
     margin: 15px auto;
     padding: 20px;
     border-radius: 12px;
@@ -76,41 +74,47 @@ body {
     transform: scale(1.02);
 }
 
-/* Throne holder */
+/* ===== TEXT STYLING (HIGH CONTRAST) ===== */
+.player-name {
+    font-size: 1.6rem;
+    color: #2b0000;
+    font-weight: 700;
+}
+
+.score {
+    font-size: 1.9rem;
+    margin-top: 8px;
+    color: #8b0000;
+    font-weight: 700;
+}
+
+.title {
+    font-size: 1.2rem;
+    margin-top: 8px;
+    color: #5a0000;
+}
+
+/* ===== THRONE HOLDER ===== */
 .throne {
     border: 3px solid gold;
     box-shadow: 0 0 25px gold;
     transform: scale(1.05);
 }
 
-/* God tier glow */
+/* ===== GOD TIER ===== */
 .goldGlow {
     box-shadow: 0 0 20px gold;
 }
 
-/* 2000+ cosmic glow */
+/* ===== 2000+ COSMIC ===== */
 .cosmicGlow {
     box-shadow: 0 0 25px #ffd700, 0 0 40px #a855f7;
-}
-
-.player-name {
-    font-size: 1.6rem;
-}
-
-.score {
-    font-size: 1.8rem;
-    margin-top: 8px;
-}
-
-.title {
-    font-size: 1.2rem;
-    margin-top: 8px;
 }
 
 .refresh {
     margin-top: 20px;
     font-size: 0.9rem;
-    color: #5a3b17;
+    color: #fff4db;
 }
 
 </style>
@@ -132,7 +136,7 @@ Auto-refreshing every 30 seconds…
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5cF1uw15BXEj_czuBu979BQ_mQUlHBsiEj17VyyKyTscrPwz8OLK4wgyvkVle7otZnBRHTISUSxY5/pub?output=csv";
 
-/* Title Logic */
+/* ===== TITLE LOGIC ===== */
 function getTitle(score) {
     if (score >= 2000) return "🌌 The Eternal Architect of Destiny";
     if (score >= 1400) return "👑 God of Fortune, Bringer of Sevens";
